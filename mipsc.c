@@ -2,7 +2,7 @@
 // starting point code v1.0 - 24/10/22
 
 
-// IN PROGRESS
+// PUT YOUR HEADER COMMENT HERE
 
 
 #include <stdio.h>
@@ -85,10 +85,6 @@ void execute_instructions(uint32_t n_instructions,
         registers[34] = supress_stdout(); 
     }
 
-    registers[9] = 12;
-    registers[10] = 20;
-    registers[11] = 15;
-
     for (int i = 0; i < n_instructions; i++) { 
         printf("%d: 0x%08X ", i, instructions[i]);
         int which_instruction = determine_instruction(instructions[i]);
@@ -113,7 +109,9 @@ void execute_instructions(uint32_t n_instructions,
         else if (which_instruction == BEQ || which_instruction == BNE) { 
             int pc = third_group(which_instruction, instructions[i], registers, i);
             i = pc;
+           
         }
+        registers[0] = 0;
     }
 
 }
@@ -236,10 +234,12 @@ void second_group(int which_instruction, uint32_t binary_instruction, int regist
 
      
     if (which_instruction == MULT) { 
-        printf("mult  $%d, $%d\n", source, transform);
-        int64_t temp = registers[source] * registers[transform];
-       // registers[HI] = (registers[source] * registers[transform]) >> 31;
-       // registers[LO] = (registers[source] * registers[transform]) & 0x00000000FFFFFFFF;
+        printf("mult $%d, $%d\n", source, transform);
+        int64_t temp = (int64_t) registers[source] * registers[transform];
+        registers[HI] = temp >> 32;
+        registers[LO] = temp & 0x00000000FFFFFFFF;
+        printf(">>> HI = %d\n", registers[HI]);
+        printf(">>> LO = %d\n", registers[LO]);
     }
      
     else if (which_instruction == DIV) {
@@ -275,7 +275,7 @@ int third_group(int which_instruction, uint32_t binary_instruction, int register
     if (which_instruction == BEQ) { 
         printf("beq  $%d, $%d, %d\n", source, transform, immediate);
         if (registers[transform] == registers[source]) { 
-            pc += immediate - 1;
+            pc += immediate;
             printf(">>> branch taken to PC = %d\n", pc);
             pc--;
         }
@@ -312,7 +312,7 @@ void fourth_group(int which_instruction, uint32_t binary_instruction, int regist
     }
 
     else if (which_instruction == ORI) { 
-        registers[transform] = registers[source] | immediate;
+        registers[transform] = registers[source] | (uint16_t) immediate;
         printf("ori  $%d, $%d, %d\n", transform, source, immediate);
         printf(">>> $%d = %d\n", transform, registers[transform]);
     }
