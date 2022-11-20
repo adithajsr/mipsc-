@@ -1,9 +1,9 @@
 // COMP1521 22T3 Assignment 2: mipsc -- a MIPS simulator
 // starting point code v1.0 - 24/10/22
 
-
-// PUT YOUR HEADER COMMENT HERE
-
+//******************************************************
+// IN PROGRESS
+//******************************************************
 
 #include <stdio.h>
 #include <stdlib.h>
